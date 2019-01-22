@@ -24,7 +24,7 @@ class HackathonTeam(models.Model):
     name = models.CharField(max_length=50, unique=True)
     # leader = models.ForeignKey(User, on_delete=models.CASCADE)
     # current_members = models.ManyToManyField(User)
-    hackathons = models.ManyToManyField(Hackathon)
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     vacancies = models.PositiveSmallIntegerField(default=3)
     closed = models.BooleanField(default=False)
     cut_off_date = models.DateField(default=date.today)
