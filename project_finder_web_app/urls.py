@@ -23,10 +23,5 @@ urlpatterns = [
         views.HackathonTeamRequestCreate.as_view(),
         name='hackathon_team_request_create'
     ),
-    # path(
-    #     'hackathon_team_request_view_set/<int:pk>',
-    #     views.HackathonTeamRequestViewSet.as_view({'get': 'list', 'put': 'reject'}),
-    #     name='hackathon_team_request_detail'
-    # ),
     path('logout/', views.UserLogoutAPIView.as_view(), name='logout'),
 ]
