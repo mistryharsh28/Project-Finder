@@ -13,7 +13,9 @@ from django.http import HttpResponseRedirect
 from .models import User
 from rest_framework import viewsets
 from rest_framework.serializers import ValidationError
+from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.generics import (
     CreateAPIView,
@@ -63,7 +65,7 @@ class UserLoginAPIView(APIView):
             if user:
                 login(request, user)
 # return HttpResponseRedirect(redirect_to="/menu_item/")
-                return Response(serializer.data.get("username"), status=HTTP_200_OK)
+                return Response(serializer.data, status=HTTP_200_OK)
             else:
                 raise ValidationError("Wrong Login Credentials")
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
