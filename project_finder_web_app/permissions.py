@@ -9,12 +9,12 @@ class IsReadOnly(permissions.BasePermission):
 
 class IsTeacher(permissions.BasePermission):
     def has_permission(self, request, view):
-            if request.user.is_superuser:
+        if request.user.is_superuser:
+            return True
+        elif request.user and request.user.is_authenticated:
+            if (request.user.is_teacher):
                 return True
-            elif request.user and request.user.is_authenticated:
-                if (request.user.is_teacher):
-                    return True
-            return False
+        return False
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
