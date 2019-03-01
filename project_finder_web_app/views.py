@@ -35,7 +35,6 @@ from rest_framework.permissions import (
 )
 from project_finder_web_app.serializers import UserCreateSerializer, UserLoginSerializer, UserDetailSerializer
 from rest_framework.decorators import action
-from drf_yasg.utils import no_body, swagger_auto_schema
 from . import choices
 
 
