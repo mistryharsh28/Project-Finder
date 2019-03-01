@@ -133,13 +133,11 @@ class HackathonTeamRequestViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["put", "get"])
     def accept(self, request, pk=None):
         hackathon_team_request = self.get_object()
-        hackathon_team_request.status = 'A'
-        hackathon_team_request.save()
+        hackathon_team_request.accept()
         return Response({"message": "Request accepted"})
 
     @action(detail=True, methods=["put", "get"])
     def reject(self, request, pk=None):
         hackathon_team_request = self.get_object()
-        hackathon_team_request.status = 'R'
-        hackathon_team_request.save()
+        hackathon_team_request.reject()
         return Response({"message": "Request rejected"})
