@@ -11,29 +11,32 @@ class Skill(models.Model):
         return self.skill
 
 
+def path(instance, filename):
+    return 'photos/{0}/{1}'.format(instance.mobile, filename)
+
+
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     sap_id = models.CharField(max_length=15, unique=True)
     mobile = models.CharField(max_length=10, unique=True)
-    photo = models.FileField(upload_to='certain_location', blank=True, null=True)
+    photo = models.FileField(upload_to=path, blank=True, null=True)
     is_mentor = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
     bio = models.TextField(max_length=500, blank=True)
     Github = models.URLField(null=True, blank=True)
     LinkedIN = models.URLField(null=True, blank=True)
+    Behance = models.URLField(null=True, blank=True)
+    StackOverFlow = models.URLField(null=True, blank=True)
     years = (
         ('FE', 'First Year'),
         ('SE', 'Second Year'),
         ('TE', 'Third Year'),
         ('BE', 'Fourth Year'),
+        ('AL', 'Alumini'),
     )
     year = models.CharField(max_length=2, choices=years, default='FE')
-    skill_1 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='skill_1')
-    skill_2 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='skill_2')
-    skill_3 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='skill_3')
-    interest_1 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='interest_1')
-    interest_2 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='interest_2')
-    interest_3 = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True, related_name='interest_3')
+    skills = models.ManyToManyField(Skill, related_name="user_skills")
+    interests = models.ManyToManyField(Skill, related_name="user_interests")
 
     def __str__(self):
         return self.email
@@ -57,8 +60,8 @@ class Project(models.Model):
 class ProjectTeam(models.Model):
     name = models.CharField(max_length=50, unique=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='leader')
-    current_members = models.ManyToManyField(User)
+    leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="project_leader")
+    current_members = models.ManyToManyField(User, related_name="project_members")
     vacancies = models.PositiveSmallIntegerField(default=3)
     closed = models.BooleanField(default=False)
 
@@ -107,8 +110,8 @@ class Hackathon(models.Model):
 
 class HackathonTeam(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hackathonteamleader')
-    current_members = models.ManyToManyField(User)
+    leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="hackathon_leader")
+    current_members = models.ManyToManyField(User, related_name="hackathon_members")
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     vacancies = models.PositiveSmallIntegerField(default=3)
     closed = models.BooleanField(default=False)
@@ -117,6 +120,10 @@ class HackathonTeam(models.Model):
 
     def __str__(self):
         return self.name
+
+    def add_member(self, member):
+        self.current_members.add(member)
+        self.save()
 
 
 class HackathonTeamRequest(models.Model):
@@ -131,3 +138,14 @@ class HackathonTeamRequest(models.Model):
         ('R', 'Rejected'),
     )
     status = models.CharField(max_length=1, choices=status_choices, default='P')
+
+    def __str__(self):
+        return self.sender.username + ' --> ' + self.team.name
+
+    def accept(self):
+        self.status = 'A'
+        self.save()
+
+    def reject(self):
+        self.status = 'R'
+        self.save()
